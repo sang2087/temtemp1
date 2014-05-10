@@ -46,7 +46,7 @@ GA::GA(){
     }
   }
   end_t = time(0);
-  // cout << total_best.fitness_score<< endl;
+   //cout << total_best.fitness_score<< endl;
   // for(int i=0;i<gene_number;i++){
   //   cout << total_best.gene[i].number << " ";
   // }
@@ -78,18 +78,18 @@ void GA::set_value(int p, int c, float m, float t, float e, float w, float n, fl
   player_distribution.set_value(10, tournament_ratio);
 }
 void GA::get_input(){
-  ifstream fin("grading1/cycle.in.1");
+  ifstream fin("grading1/cycle.in.3");
 
   fin >> gene_number;
 
   //set value
   if(gene_number < 25){
     //set_value(100, 3, 0.02, 0.3, 0.001, 0.2, 0, 0.5);
-    set_value(10, 3, 0.02, 0.3, 0.0, 0.2, 0, 0.4);
+    set_value(100, 3, 0.02, 0.3, 0.0, 0.2, 0, 0.4);
   }else if(gene_number < 55){
     //667    set_value(50, 3, 0.03, 0.1, 0.2, 0.01, 0.00, 1);
     //671 set_value(100, 3, 0.03, 0.1, 0.2, 0.01, 0.00, 1);
-    set_value(100, 5, 0.018, 0.1, 0.00, 0.35, 0.00, 1.9);
+    set_value(3, 5, 0.018, 0.1, 0.00, 0.35, 0.00, 1.9);
     //649 set_value(200, 4, 0.01, 0.1, 0.1, 0.01, 0.00, 0.77);
     //set_value(200, 4, 0.01, 0.1, 0.1, 0.01, 0.00, 1);
     //set_value(20, 4, 0.005, 0.1, 0.00, 0.2, 0.0, 1);
@@ -181,6 +181,7 @@ void GA::crossover(int parent1_index, int parent2_index){
 
   delete[] offspring[offspring_counter].gene;
   offspring[offspring_counter].gene = offspring_gene;
+  //
   
   offspring_counter++;
 
@@ -384,7 +385,7 @@ int GA::tournament(){
         small = player_index[j*2];
       }
 
-      if(rand() % 100 > 95){
+      if(rand() % 100 > 65){
         player_index[j] = large;
       }else{
         player_index[j] = small;
@@ -421,7 +422,7 @@ float GA::fitness_score(int chromosome_index){
 }
 void GA::set_output(){
   ofstream fout("cycle.out");
-  //fout << total_best.fitness_score<< endl;
+  cout << total_best.fitness_score<< endl;
   for(int i=0;i<gene_number;i++){
     fout << total_best.gene[i].number << " ";
   }
