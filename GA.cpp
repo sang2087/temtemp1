@@ -21,9 +21,13 @@ GA::GA(){
   for(int i=0;i<limit_generation;i++){
     //cout << "GENERATION" << i << endl;
     generation = i;
+    //cout << "replace" << endl;
     GA::replacement();
+    //cout << "selection" << endl;
     GA::selection(); //selection 안에 crossover이 있음.
+    //cout << "mutaion" << endl;
     GA::mutation();
+    //cout << "change" << endl;
     parent = offspring;
     //cout << offspring_counter<<endl;
     //cout << parent[0].fitness_score<<endl;
@@ -37,6 +41,7 @@ GA::GA(){
     }
 
     if(end_t - start_t > limit_time * 0.90 || generation >= limit_generation-1){
+
       break;
     }
   }
@@ -46,7 +51,18 @@ GA::GA(){
   //   cout << total_best.gene[i].number << " ";
   // }
   // cout << endl;
+  //
   set_output();
+  delete[] parent;
+  delete[] stage_parent;
+
+  delete[] best_fitness_arr;
+  delete[] worst_fitness_arr;
+  delete[] dominant_number_arr;
+  delete[] dominant_fitness_arr;
+  delete[] different_number_arr;
+
+
 }
 
 void GA::set_value(int p, int c, float m, float t, float e, float w, float n, float l){
@@ -62,14 +78,14 @@ void GA::set_value(int p, int c, float m, float t, float e, float w, float n, fl
   player_distribution.set_value(10, tournament_ratio);
 }
 void GA::get_input(){
-  ifstream fin("cycle.in");
+  ifstream fin("grading1/cycle.in.1");
 
   fin >> gene_number;
 
   //set value
   if(gene_number < 25){
     //set_value(100, 3, 0.02, 0.3, 0.001, 0.2, 0, 0.5);
-    set_value(100, 3, 0.02, 0.3, 0.0, 0.2, 0, 0.4);
+    set_value(10, 3, 0.02, 0.3, 0.0, 0.2, 0, 0.4);
   }else if(gene_number < 55){
     //667    set_value(50, 3, 0.03, 0.1, 0.2, 0.01, 0.00, 1);
     //671 set_value(100, 3, 0.03, 0.1, 0.2, 0.01, 0.00, 1);
@@ -108,8 +124,11 @@ void GA::get_input(){
 
 void GA::init(){
   population_number = gene_number * population_multify;//TODO change this value if you want to test.
-  parent = new Chromosome[population_number];
+  //parent = new Chromosome[population_number];
   offspring = new Chromosome[population_number];
+ for(int i=0;i<population_number;i++){
+    offspring[i].gene = new Gene[gene_number];
+ }
 
   limit_generation = 5000000;
   stage_parent  = new Chromosome[limit_generation];
@@ -159,8 +178,12 @@ void GA::crossover(int parent1_index, int parent2_index){
   }
 
   offspring_gene = repair(offspring_gene);
+
+  delete[] offspring[offspring_counter].gene;
   offspring[offspring_counter].gene = offspring_gene;
+  
   offspring_counter++;
+
 }
 
 void GA::mutation(){//TODO mutation의 효율을 높일 수 있음. 일단은 정석의 방법대로 했음.
@@ -247,8 +270,10 @@ void GA::replacement(){
   }
 
 
-  offspring = new Chromosome[population_number];
-  offspring[0] = parent[best_chromosome_index[1]];
+  //offspring = new Chromosome[population_number];
+  if(elite_number >0)
+    offspring[0] = parent[best_chromosome_index[1]];
+
   for(int i=1;i<elite_number;i++){
     offspring[i] = parent[best_chromosome_index[i]];
     // cout << i << " : " << best_chromosome_index[i] << endl;
@@ -258,8 +283,9 @@ void GA::replacement(){
 
   }
 
+
   for(int i=elite_number;i<elite_number+population_number * new_add_ratio && i<population_number;i++){
-    parent[i].gene = new Gene[gene_number];
+    //parent[i].gene = new Gene[gene_number];
     parent[i].gene[0] = input_gene[0]; //첫 Gene은 1로 고정
 
     for(int j=1;j<gene_number;j++){
@@ -292,6 +318,7 @@ void GA::replacement(){
     stage_counter++;
     reset_all_offspring();
   }
+
 }
 float GA::dominant_ratio(float best_fitness_score){
   int counter = 0;
@@ -408,7 +435,7 @@ void GA::reset_all_offspring(){
   }
 
   for(int i=0;i<population_number;i++){
-    offspring[i].gene = new Gene[gene_number];
+ //   offspring[i].gene = new Gene[gene_number];
     offspring[i].gene[0] = input_gene[0]; //첫 Gene은 1로 고정
 
     for(int j=1;j<gene_number;j++){
